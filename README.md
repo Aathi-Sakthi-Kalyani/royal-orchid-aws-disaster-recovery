@@ -101,7 +101,10 @@ The solution uses a multi-region disaster recovery architecture with Mumbai as t
         |                   |
         v                   v
    Amazon S3            AWS Backup
-### Architecture Components
+
+---
+
+## Architecture Components
 
 - **Amazon Route 53** – Provides DNS management and failover routing.
 - **Route 53 Health Check** – Monitors the availability of the primary Mumbai web server.
@@ -110,7 +113,9 @@ The solution uses a multi-region disaster recovery architecture with Mumbai as t
 - **Amazon S3** – Used for storing backup data.
 - **AWS Backup** – Used for centralized and automated backup management.
 
-### Normal Operation
+---
+
+## Normal Operation
 
 Under normal conditions, Route 53 directs users to the primary Mumbai EC2 instance.
 
@@ -129,6 +134,8 @@ Apache
   |
   v
 Hotel Website
+
+---
 
 User
   |
