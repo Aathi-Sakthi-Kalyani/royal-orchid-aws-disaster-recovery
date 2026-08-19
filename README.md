@@ -69,30 +69,80 @@ If the Mumbai server becomes unavailable, Route 53 redirects traffic to the Sing
 ---
 
 ## 🔄 Disaster Recovery Workflow
+## Architecture
+
+The solution uses a multi-region disaster recovery architecture with Mumbai as the primary environment and Singapore as the disaster recovery (DR) environment.
 
 ```text
-                         User
+                         USERS
                            |
                            v
-                    royalorchid.co.in
+                  royalorchid.co.in
                            |
                            v
-                     Amazon Route 53
-                           |
-                    Health Check
+                    AMAZON ROUTE 53
+                    DNS + Health Check
                            |
                 +----------+----------+
                 |                     |
-             Healthy                Failed
+             HEALTHY               FAILURE
                 |                     |
                 v                     v
-        Mumbai EC2              Singapore EC2
-          PRIMARY                    DR
+        MUMBAI PRIMARY         SINGAPORE DR
+           EC2 + Apache          EC2 + Apache
                 |                     |
                 v                     v
-             Apache                Apache
-                |                     |
-                +----------+----------+
-                           |
-                           v
-                     Hotel Website
+        PRIMARY WEBSITE          DR WEBSITE
+
+
+       DATA BACKUP / RECOVERY
+                  |
+        +---------+---------+
+        |                   |
+        v                   v
+   Amazon S3            AWS Backup
+### Architecture Components
+
+- **Amazon Route 53** – Provides DNS management and failover routing.
+- **Route 53 Health Check** – Monitors the availability of the primary Mumbai web server.
+- **Mumbai EC2** – Primary production web server running Ubuntu and Apache.
+- **Singapore EC2** – Disaster recovery web server running Ubuntu and Apache.
+- **Amazon S3** – Used for storing backup data.
+- **AWS Backup** – Used for centralized and automated backup management.
+
+### Normal Operation
+
+Under normal conditions, Route 53 directs users to the primary Mumbai EC2 instance.
+
+```text
+User
+  |
+  v
+Route 53
+  |
+  | Health Check: HEALTHY
+  v
+Mumbai EC2
+  |
+  v
+Apache
+  |
+  v
+Hotel Website
+
+User
+  |
+  v
+Route 53
+  |
+  | Health Check: UNHEALTHY
+  v
+Singapore EC2
+  |
+  v
+Apache
+  |
+  v
+DR Website
+
+
