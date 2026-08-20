@@ -101,18 +101,40 @@ The solution uses a multi-region disaster recovery architecture with Mumbai as t
         |                   |
         v                   v
    Amazon S3            AWS Backup
+```
+## 🧩 Architecture Components
 
-🧩 Architecture Components
-Amazon Route 53 – Provides DNS management and failover routing.
-Route 53 Health Check – Monitors the availability of the primary Mumbai web server.
-Mumbai EC2 – Primary production web server running Ubuntu and Apache.
-Singapore EC2 – Disaster recovery web server running Ubuntu and Apache.
-Amazon S3 – Used for storing backup data.
-AWS Backup – Used for centralized and automated backup management.
-✅ Normal Operation
+### Amazon Route 53
+
+Provides DNS management and failover routing for the hotel domain.
+
+### Route 53 Health Check
+
+Monitors the availability of the primary Mumbai web server.
+
+### Mumbai EC2 – Primary
+
+The primary production web server running Ubuntu Linux and Apache.
+
+### Singapore EC2 – Disaster Recovery
+
+The backup web server running Ubuntu Linux and Apache. It serves the website when the Mumbai server becomes unavailable.
+
+### Amazon S3
+
+Stores critical hotel data such as reservation and billing information.
+
+### AWS Backup
+
+Provides automated backup and recovery of protected AWS resources.
+
+---
+
+## ✅ Normal Operation
 
 Under normal conditions, Route 53 directs users to the primary Mumbai EC2 instance.
 
+```text
 User
   |
   v
@@ -127,143 +149,172 @@ Apache
   |
   v
 Hotel Website
-🚨 Disaster Recovery Operation
+```
 
-When the Mumbai primary server becomes unavailable, the Route 53 health check detects the failure and DNS failover directs traffic to the Singapore disaster recovery server.
+This allows the hotel website to remain accessible even when the primary server is unavailable.
 
-User
-  |
-  v
-Route 53
-  |
-  | Health Check: UNHEALTHY
-  v
-Singapore EC2
-  |
-  v
-Apache
-  |
-  v
-DR Website
-💾 Backup and Recovery
+---
 
-AWS Backup was configured to automatically back up the production S3 bucket:
+## 💾 Backup and Recovery
 
-roh-dr-backup-bucket
+Amazon S3 is used to store critical hotel data in the production environment.
 
-A recovery point was successfully created and later restored using AWS Backup.
+The S3 bucket used in this project is:
 
-Recovery Test
-Backup resource: roh-dr-backup-bucket
-Backup type: Automated
-Storage tier: Warm
-Recovery point: Successfully created
-Restore status: Completed
-Restored data:
-billing.txt
-reservations.txt
+`roh-dr-backup-bucket`
 
-The successful restore confirms that the project's backup and recovery mechanism can recover the stored hotel reservation and billing data.
+AWS Backup was configured to automatically back up the production S3 bucket.
 
-🧪 Disaster Recovery Testing
+### Backup Configuration
 
-The disaster recovery process was tested by intentionally stopping the primary Mumbai EC2 server.
+| Configuration | Details |
+|---|---|
+| Backup Resource | `roh-dr-backup-bucket` |
+| Backup Type | Automated |
+| Storage Tier | Warm |
+| Backup Status | Completed |
+| AWS Backup Plan | `roh-backup-plan` |
 
-Test Scenario
-The Mumbai EC2 instance was running normally.
-Route 53 health check reported the primary server as healthy.
-The Mumbai EC2 instance was stopped to simulate a server failure.
-Route 53 detected that the primary server was unavailable.
-DNS failover redirected traffic to the Singapore EC2 instance.
-The Singapore Apache server successfully served the disaster recovery website.
-The domain was tested again and the website successfully loaded through the Singapore server.
-Test Result
+### Recovery Test
 
-Disaster recovery failover was successfully tested and validated.
+A recovery point was successfully created using AWS Backup and subsequently restored.
 
-📊 Validation Results
-Test	Result
-Mumbai EC2 primary server	✅ Successful
-Route 53 health check	✅ Healthy
-Primary server failure simulation	✅ Successful
-Route 53 DNS failover	✅ Successful
-Singapore DR server	✅ Successful
-DR website accessibility	✅ Successful
-S3 backup	✅ Successful
-AWS Backup recovery point	✅ Successful
-S3 restore operation	✅ Completed
-Restored billing.txt	✅ Available
-Restored reservations.txt	✅ Available
-🔐 Security
+The restored S3 data included:
+
+- `billing.txt`
+- `reservations.txt`
+
+The restore job completed successfully, confirming that the backup data could be recovered.
+
+---
+
+## 🧪 Disaster Recovery Testing
+
+The disaster recovery mechanism was tested by intentionally stopping the primary Mumbai EC2 instance.
+
+### Test Scenario
+
+1. The Mumbai EC2 instance was running normally.
+2. Route 53 health check reported the primary server as healthy.
+3. The Mumbai EC2 instance was stopped to simulate a server failure.
+4. Route 53 detected that the primary server was unavailable.
+5. DNS failover redirected traffic to the Singapore EC2 instance.
+6. The Singapore Apache server successfully served the disaster recovery website.
+7. The domain was tested again and the website successfully loaded through the Singapore server.
+8. The Mumbai EC2 instance was subsequently restored.
+
+### Test Result
+
+**Disaster recovery failover was successfully tested and validated.**
+
+---
+
+## 📊 Validation Results
+
+| Test | Result |
+|---|---|
+| Mumbai EC2 primary server | ✅ Successful |
+| Route 53 health check | ✅ Healthy |
+| Primary server failure simulation | ✅ Successful |
+| Route 53 DNS failover | ✅ Successful |
+| Singapore DR server | ✅ Successful |
+| DR website accessibility | ✅ Successful |
+| S3 backup | ✅ Successful |
+| AWS Backup recovery point | ✅ Successful |
+| S3 restore operation | ✅ Completed |
+| `billing.txt` restoration | ✅ Available |
+| `reservations.txt` restoration | ✅ Available |
+
+---
+
+## 🔐 Security
 
 The project uses AWS security mechanisms including:
 
-Amazon VPC for network infrastructure
-EC2 Security Groups for controlling network traffic
-IAM roles for AWS Backup
-S3 access controls
-AWS-managed encryption for backup data
-Route 53 health checks for endpoint monitoring
+- Amazon VPC for network infrastructure
+- EC2 Security Groups for controlling network traffic
+- IAM roles for AWS Backup
+- S3 access controls
+- AWS-managed encryption for backup data
+- Route 53 health checks for endpoint monitoring
 
-Sensitive information such as passwords, AWS access keys, and secret credentials are not included in this repository.
+Sensitive information such as passwords, AWS access keys, secret credentials, and private configuration data are not included in this repository.
 
-🛠️ Technologies Used
-Amazon Web Services (AWS)
-Amazon EC2
-Amazon Route 53
-Route 53 Health Checks
-Amazon S3
-AWS Backup
-Amazon VPC
-Security Groups
-Ubuntu Linux
-Apache Web Server
-GitHub
-📚 Project Learning
+---
+
+## 🛠️ Technologies Used
+
+- Amazon Web Services (AWS)
+- Amazon EC2
+- Amazon Route 53
+- Route 53 Health Checks
+- Amazon S3
+- AWS Backup
+- Amazon VPC
+- Security Groups
+- Ubuntu Linux
+- Apache Web Server
+- GitHub
+
+---
+
+## 📚 Project Learning
 
 This project provided practical experience with:
 
-Multi-region AWS architecture
-EC2 deployment and configuration
-Ubuntu Linux server administration
-Apache web server configuration
-DNS management
-Route 53 failover routing
-Route 53 health checks
-Amazon S3 data management
-AWS Backup
-Backup restoration
-Disaster recovery testing
-Cloud infrastructure troubleshooting
-GitHub project documentation
-🚀 Future Improvements
+- Multi-region AWS architecture
+- EC2 deployment and configuration
+- Ubuntu Linux server administration
+- Apache web server configuration
+- DNS management
+- Route 53 failover routing
+- Route 53 health checks
+- Amazon S3 data management
+- AWS Backup
+- Backup restoration
+- Disaster recovery testing
+- Cloud infrastructure troubleshooting
+- GitHub project documentation
+
+---
+
+## 🚀 Future Improvements
 
 The current disaster recovery architecture can be extended with:
 
-Amazon CloudFront
-AWS WAF
-Application Load Balancer
-Infrastructure as Code using Terraform or AWS CloudFormation
-Automated EC2 recovery
-Cross-region S3 replication
-Centralized CloudWatch monitoring
-Automated disaster recovery testing
-Database replication
-👩‍💻 Project Author
+- Amazon CloudFront
+- AWS WAF
+- Application Load Balancer
+- Infrastructure as Code using Terraform or AWS CloudFormation
+- Automated EC2 recovery
+- Cross-region S3 replication
+- Centralized CloudWatch monitoring
+- Automated disaster recovery testing
+- Database replication
 
-Aathi Sakthi Kalyani
+---
+
+## 👩‍💻 Project Author
+
+**Aathi Sakthi Kalyani**
 
 B.E. Computer Science and Engineering
 
-GitHub:
+GitHub:  
 https://github.com/Aathi-Sakthi-Kalyani
 
-⭐ Project Summary
+---
 
-This project implements a multi-region AWS disaster recovery solution for Royal Orchid Hotel Group using Amazon EC2, Route 53, Route 53 Health Checks, Amazon S3, AWS Backup, Amazon VPC, Security Groups, Ubuntu Linux, and Apache.
+## ⭐ Project Summary
 
-The primary website is hosted in the Mumbai AWS Region, while the Singapore AWS Region provides the disaster recovery environment.
+This project demonstrates a multi-region AWS disaster recovery architecture for Royal Orchid Hotel Group.
 
-The disaster recovery process was successfully tested by stopping the Mumbai EC2 server and verifying that Route 53 redirected traffic to the Singapore DR server.
+The primary website is hosted on an EC2 instance in the Mumbai AWS Region, while a second EC2 instance in the Singapore AWS Region acts as the disaster recovery server.
 
-The S3 backup and recovery mechanism was also successfully tested, with billing.txt and reservations.txt successfully restored using AWS Backup.
+Route 53 health checks and DNS failover were used to detect primary server failure and redirect users to the Singapore DR environment.
+
+The disaster recovery process was successfully validated by stopping the Mumbai EC2 instance and confirming that the website remained accessible through the Singapore server.
+
+AWS Backup was also tested successfully by creating and restoring an S3 recovery point containing the project's hotel reservation and billing data.
+
+ssfully tested, with billing.txt and reservations.txt successfully restored using AWS Backup.
