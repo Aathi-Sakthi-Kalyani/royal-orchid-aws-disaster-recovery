@@ -151,5 +151,24 @@ Apache
   |
   v
 DR Website
+## 💾 Backup and Recovery
 
+AWS Backup was configured to automatically back up the production S3 bucket
+`roh-dr-backup-bucket`.
+
+A recovery point was successfully created and later restored using AWS Backup.
+
+### Recovery Test
+
+- Backup resource: `roh-dr-backup-bucket`
+- Backup type: Automated
+- Storage tier: Warm
+- Recovery point: Successfully created
+- Restore status: Completed
+- Restored data:
+  - `billing.txt`
+  - `reservations.txt`
+
+The successful restore confirms that the project's backup and recovery
+mechanism can recover the stored hotel reservation and billing data.
 
