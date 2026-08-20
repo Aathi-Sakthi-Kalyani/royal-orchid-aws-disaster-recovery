@@ -102,24 +102,17 @@ The solution uses a multi-region disaster recovery architecture with Mumbai as t
         v                   v
    Amazon S3            AWS Backup
 
----
-
-## Architecture Components
-
-- **Amazon Route 53** – Provides DNS management and failover routing.
-- **Route 53 Health Check** – Monitors the availability of the primary Mumbai web server.
-- **Mumbai EC2** – Primary production web server running Ubuntu and Apache.
-- **Singapore EC2** – Disaster recovery web server running Ubuntu and Apache.
-- **Amazon S3** – Used for storing backup data.
-- **AWS Backup** – Used for centralized and automated backup management.
-
----
-
-## Normal Operation
+🧩 Architecture Components
+Amazon Route 53 – Provides DNS management and failover routing.
+Route 53 Health Check – Monitors the availability of the primary Mumbai web server.
+Mumbai EC2 – Primary production web server running Ubuntu and Apache.
+Singapore EC2 – Disaster recovery web server running Ubuntu and Apache.
+Amazon S3 – Used for storing backup data.
+AWS Backup – Used for centralized and automated backup management.
+✅ Normal Operation
 
 Under normal conditions, Route 53 directs users to the primary Mumbai EC2 instance.
 
-```text
 User
   |
   v
@@ -134,8 +127,9 @@ Apache
   |
   v
 Hotel Website
+🚨 Disaster Recovery Operation
 
----
+When the Mumbai primary server becomes unavailable, the Route 53 health check detects the failure and DNS failover directs traffic to the Singapore disaster recovery server.
 
 User
   |
@@ -151,24 +145,125 @@ Apache
   |
   v
 DR Website
-## 💾 Backup and Recovery
+💾 Backup and Recovery
 
-AWS Backup was configured to automatically back up the production S3 bucket
-`roh-dr-backup-bucket`.
+AWS Backup was configured to automatically back up the production S3 bucket:
+
+roh-dr-backup-bucket
 
 A recovery point was successfully created and later restored using AWS Backup.
 
-### Recovery Test
+Recovery Test
+Backup resource: roh-dr-backup-bucket
+Backup type: Automated
+Storage tier: Warm
+Recovery point: Successfully created
+Restore status: Completed
+Restored data:
+billing.txt
+reservations.txt
 
-- Backup resource: `roh-dr-backup-bucket`
-- Backup type: Automated
-- Storage tier: Warm
-- Recovery point: Successfully created
-- Restore status: Completed
-- Restored data:
-  - `billing.txt`
-  - `reservations.txt`
+The successful restore confirms that the project's backup and recovery mechanism can recover the stored hotel reservation and billing data.
 
-The successful restore confirms that the project's backup and recovery
-mechanism can recover the stored hotel reservation and billing data.
+🧪 Disaster Recovery Testing
 
+The disaster recovery process was tested by intentionally stopping the primary Mumbai EC2 server.
+
+Test Scenario
+The Mumbai EC2 instance was running normally.
+Route 53 health check reported the primary server as healthy.
+The Mumbai EC2 instance was stopped to simulate a server failure.
+Route 53 detected that the primary server was unavailable.
+DNS failover redirected traffic to the Singapore EC2 instance.
+The Singapore Apache server successfully served the disaster recovery website.
+The domain was tested again and the website successfully loaded through the Singapore server.
+Test Result
+
+Disaster recovery failover was successfully tested and validated.
+
+📊 Validation Results
+Test	Result
+Mumbai EC2 primary server	✅ Successful
+Route 53 health check	✅ Healthy
+Primary server failure simulation	✅ Successful
+Route 53 DNS failover	✅ Successful
+Singapore DR server	✅ Successful
+DR website accessibility	✅ Successful
+S3 backup	✅ Successful
+AWS Backup recovery point	✅ Successful
+S3 restore operation	✅ Completed
+Restored billing.txt	✅ Available
+Restored reservations.txt	✅ Available
+🔐 Security
+
+The project uses AWS security mechanisms including:
+
+Amazon VPC for network infrastructure
+EC2 Security Groups for controlling network traffic
+IAM roles for AWS Backup
+S3 access controls
+AWS-managed encryption for backup data
+Route 53 health checks for endpoint monitoring
+
+Sensitive information such as passwords, AWS access keys, and secret credentials are not included in this repository.
+
+🛠️ Technologies Used
+Amazon Web Services (AWS)
+Amazon EC2
+Amazon Route 53
+Route 53 Health Checks
+Amazon S3
+AWS Backup
+Amazon VPC
+Security Groups
+Ubuntu Linux
+Apache Web Server
+GitHub
+📚 Project Learning
+
+This project provided practical experience with:
+
+Multi-region AWS architecture
+EC2 deployment and configuration
+Ubuntu Linux server administration
+Apache web server configuration
+DNS management
+Route 53 failover routing
+Route 53 health checks
+Amazon S3 data management
+AWS Backup
+Backup restoration
+Disaster recovery testing
+Cloud infrastructure troubleshooting
+GitHub project documentation
+🚀 Future Improvements
+
+The current disaster recovery architecture can be extended with:
+
+Amazon CloudFront
+AWS WAF
+Application Load Balancer
+Infrastructure as Code using Terraform or AWS CloudFormation
+Automated EC2 recovery
+Cross-region S3 replication
+Centralized CloudWatch monitoring
+Automated disaster recovery testing
+Database replication
+👩‍💻 Project Author
+
+Aathi Sakthi Kalyani
+
+B.E. Computer Science and Engineering
+
+GitHub:
+https://github.com/Aathi-Sakthi-Kalyani
+
+⭐ Project Summary
+
+This project implements a multi-region AWS disaster recovery solution for Royal Orchid Hotel Group using Amazon EC2, Route 53, Route 53 Health Checks, Amazon S3, AWS Backup, Amazon VPC, Security Groups, Ubuntu Linux, and Apache.
+
+The primary website is hosted in the Mumbai AWS Region, while the Singapore AWS Region provides the disaster recovery environment.
+
+The disaster recovery process was successfully tested by stopping the Mumbai EC2 server and verifying that Route 53 redirected traffic to the Singapore DR server.
+
+The S3 backup and recovery mechanism was also successfully tested, with billing.txt and reservations.txt successfully restored using AWS Backup.
