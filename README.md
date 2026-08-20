@@ -307,14 +307,4 @@ https://github.com/Aathi-Sakthi-Kalyani
 
 ## ⭐ Project Summary
 
-This project demonstrates a multi-region AWS disaster recovery architecture for Royal Orchid Hotel Group.
-
-The primary website is hosted on an EC2 instance in the Mumbai AWS Region, while a second EC2 instance in the Singapore AWS Region acts as the disaster recovery server.
-
-Route 53 health checks and DNS failover were used to detect primary server failure and redirect users to the Singapore DR environment.
-
-The disaster recovery process was successfully validated by stopping the Mumbai EC2 instance and confirming that the website remained accessible through the Singapore server.
-
-AWS Backup was also tested successfully by creating and restoring an S3 recovery point containing the project's hotel reservation and billing data.
-
-ssfully tested, with billing.txt and reservations.txt successfully restored using AWS Backup.
+This project demonstrates a multi-region AWS disaster recovery architecture for Royal Orchid Hotel Group. The primary website is hosted on an EC2 instance in the Mumbai AWS Region, while a second EC2 instance in the Singapore AWS Region acts as the disaster recovery server. Route 53 health checks and DNS failover were used to detect primary server failure and redirect users to the Singapore DR environment. The disaster recovery process was successfully validated by stopping the Mumbai EC2 instance and confirming that the website remained accessible through the Singapore server. AWS Backup was also tested successfully by creating and restoring an S3 recovery point containing the project's hotel reservation and billing data.
